@@ -1,0 +1,28 @@
+name: Deploy Flutter Web to GitHub Pages # yml script 이름
+
+on:
+  push:
+    branches:
+      - main # main branch에 git push될 경우, 하단 jobs에 정의된 작업들 실행
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest # 가장 최근의 ubuntu OS에서 작업 실행
+    steps:
+    # 작업 목록
+    - name: Checkout
+      uses: actions/checkout@v4.1.1 # code를 빌드 환경에 내려 받음
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2.12.0 # ubuntu에 flutter 사용 준비
+      with:
+        flutter-version: '3.19.2'
+
+    - name: Build Web
+      run: flutter build web --base-href=/hosting_test/ # --bash-href 명령어를 통해 repository 이름을 href로 변경하여 빌드
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v4.0.0
+      with:
+        github_token: ${{ secrets.MY_SECRET_KEY_NAME }} # repository에서 사용할 시크릿 키 이름
+        publish_dir: build/web
